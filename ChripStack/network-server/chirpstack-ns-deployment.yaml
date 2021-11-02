@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-ns
+spec:
+  selector:
+    matchLabels:
+      app: chirpstack-ns
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chirpstack-ns
+    spec:
+      containers:
+      - name: chirpstack-ns
+        image: chirpstack/chirpstack-network-server:3
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: configfile
+          mountPath: /etc/chirpstack-network-server
+      volumes:
+      - name: configfile
+        configMap:
+          name:  chirpstack-ns-configmap

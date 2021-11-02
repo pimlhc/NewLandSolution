@@ -1,0 +1,15 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack-gb-configmap
+data:
+  chirpstack-gateway-bridge.toml: |
+    # See https://www.chirpstack.io/gateway-bridge/install/config/ for a full
+    # configuration example and documentation.
+
+    [integration.mqtt.auth.generic]
+    servers=["tcp://mosquitto.default:1883"]
+    username=""
+    password=""
+    

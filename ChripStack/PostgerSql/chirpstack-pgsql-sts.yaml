@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chirpstack-pgsql
+spec:
+  selector:
+    matchLabels:
+      app: pgsql
+  serviceName: pgsql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pgsql
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: pgsql
+        image: postgres:9.6-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          name: pgsql
+        envFrom:
+          - configMapRef:
+              name: chirpstack-postgres-config
+        volumeMounts:
+        - name: pginit
+          mountPath: /docker-entrypoint-initdb.d
+        - name: pgsql-pvc
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres2
+      volumes:
+      - name: pginit
+        configMap:
+          name: chirpstack-postgres-init
+      - name: pgsql-pvc
+        persistentVolumeClaim:
+          claimName: chirpstack-pgsql-disk
+
