@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newland
+  labels:
+spec:
+  selector:
+    matchLabels:
+      app: newland
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: newland
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.0.9
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 6379
+            name: redis
+          volumeMounts:
+          - name: redis-pvc
+            mountPath: /data
+            subPath: redis
+        - name: pgsql
+          image: postgres:9.6-alpine
+          imagePullPolicy: IfNotPresent
+          ports: 
+          - containerPort: 5432
+            name: pgsql
+          envFrom:
+            - configMapRef:
+                name: chirpstack-postgres-config
+          volumeMounts:
+          - name: pginit
+            mountPath: /docker-entrypoint-initdb.d
+          - name: redis-pvc
+            mountPath: /var/lib/postgresql/data
+            subPath: postgres2      
+        - name: mosquitto
+          image: eclipse-mosquitto:1.6.12 #2.0.4
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 1883
+            name: mosquitto    
+        - name: gateway-bridge
+          image: chirpstack/chirpstack-gateway-bridge:3
+          imagePullPolicy: IfNotPresent     
+          volumeMounts:
+          - name: configfilegateway
+            mountPath: /etc/chirpstack-gateway-bridge  
+        - name: chirpstack-ns
+          image: chirpstack/chirpstack-network-server:3
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: configfilens
+            mountPath: /etc/chirpstack-network-server   
+        - name: chirpstack-as
+          image: chirpstack/chirpstack-application-server:3
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: configfileas
+            mountPath: /etc/chirpstack-application-server
+          ports:
+          - name: chirpstack-as
+            containerPort: 8080        
+      volumes:
+      - name: redis-pvc
+        persistentVolumeClaim:
+          claimName: chirpstack-redis
+      - name: pginit
+        configMap:
+          name: chirpstack-postgres-init
+      - name: configfilegateway
+        configMap:
+          name:  chirpstack-gb-configmap
+      - name: configfilens
+        configMap:
+          name:  chirpstack-ns-configmap
+      - name: configfileas
+        configMap:
+          name:  chirpstack-as-configmap

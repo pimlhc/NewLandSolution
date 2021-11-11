@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: newland
+  labels:
+    app: newland
+spec:
+  containers:
+    - name: redis
+      image: redis:6.0.9
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: 6379
+        name: redis
+      volumeMounts:
+      - name: redis-pvc
+        mountPath: /data
+        subPath: redis
+    - name: pgsql
+      image: postgres:9.6-alpine
+      imagePullPolicy: IfNotPresent
+      ports: 
+      - containerPort: 5432
+        name: pgsql
+      envFrom:
+        - configMapRef:
+            name: chirpstack-postgres-config
+    - name: mosquitto
+      image: eclipse-mosquitto:1.6.12 #2.0.4
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: 1883
+        name: mosquitto           
+      volumeMounts:
+      - name: pginit
+        mountPath: /docker-entrypoint-initdb.d
+      - name: redis-pvc
+        mountPath: /var/lib/postgresql/data
+        subPath: postgres2      
+  volumes:
+  - name: redis-pvc
+    persistentVolumeClaim:
+      claimName: chirpstack-redis
+  - name: pginit
+    configMap:
+      name: chirpstack-postgres-init
