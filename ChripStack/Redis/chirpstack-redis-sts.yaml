@@ -14,8 +14,6 @@ spec:
         app: redis
     spec:
       terminationGracePeriodSeconds: 30 #default 30
-      nodeSelector:
-        app: test
       containers:
       - name: redis
         image: redis:6.0.9
