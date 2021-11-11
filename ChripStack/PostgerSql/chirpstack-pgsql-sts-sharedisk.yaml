@@ -36,6 +36,6 @@ spec:
           name: chirpstack-postgres-init
       - name: pgsql-pvc
         persistentVolumeClaim:
-          claimName: chirpstack-pgsql
+          claimName: chirpstack-redis
 
 

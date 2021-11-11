@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: chirpstack-pgsql
+  name: chirpstack-pgsql1
 spec:
   selector:
     matchLabels:
@@ -28,14 +28,14 @@ spec:
         - name: pginit
           mountPath: /docker-entrypoint-initdb.d
         - name: pgsql-pvc
-          mountPath: /var/lib/postgresql/data
-          subPath: postgres2
+          mountPath: /var/lib/postgresql/data/
+          subPath: postgres3
       volumes:
       - name: pginit
         configMap:
           name: chirpstack-postgres-init
       - name: pgsql-pvc
         persistentVolumeClaim:
-          claimName: chirpstack-pgsql
+          claimName: chirpstack-redis
 
 

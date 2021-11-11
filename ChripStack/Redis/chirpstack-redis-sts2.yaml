@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: chirpstack-redis
+  name: chirpstack-redis1
 spec:
   selector:
     matchLabels:
@@ -14,8 +14,6 @@ spec:
         app: redis
     spec:
       terminationGracePeriodSeconds: 30 #default 30
-      nodeSelector:
-        app: test
       containers:
       - name: redis
         image: redis:6.0.9

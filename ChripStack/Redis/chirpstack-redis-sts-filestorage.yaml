@@ -14,8 +14,6 @@ spec:
         app: redis
     spec:
       terminationGracePeriodSeconds: 30 #default 30
-      nodeSelector:
-        app: test
       containers:
       - name: redis
         image: redis:6.0.9
@@ -26,9 +24,8 @@ spec:
         volumeMounts:
         - name: redis-pvc
           mountPath: /data
-          subPath: redis
+          subPath: {{MYVARNAME}}-redis
       volumes:
       - name: redis-pvc
         persistentVolumeClaim:
-          claimName: chirpstack-redis
-
+          claimName: my-azurefile

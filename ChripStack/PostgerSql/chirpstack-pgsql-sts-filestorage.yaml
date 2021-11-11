@@ -28,14 +28,13 @@ spec:
         - name: pginit
           mountPath: /docker-entrypoint-initdb.d
         - name: pgsql-pvc
-          mountPath: /var/lib/postgresql/data
-          subPath: postgres2
+          mountPath: /home
+          subPath: {{MYVARNAME}}-postgres
       volumes:
       - name: pginit
         configMap:
           name: chirpstack-postgres-init
       - name: pgsql-pvc
         persistentVolumeClaim:
-          claimName: chirpstack-pgsql
-
+          claimName: my-azurefile
 
